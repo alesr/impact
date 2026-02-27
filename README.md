@@ -1,8 +1,10 @@
 # IMPACT
 
-IMPACT is CLI for assessing the environmental impact of Scaleway infrastructure from two sources: Terraform plans (forecast) and Scaleway APIs (measured data).
+IMPACT is an *experimental* CLI for assessing the environmental impact of Scaleway infrastructure from two sources: Terraform plans (forecast) and Scaleway APIs (measured data).
 
 It reports monthly impact focused on carbon emissions (`kgCO2e`) and water consumption (`m3`).
+
+![Impact estimate](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/alesr/impact/main/badges/impact-estimate.json)
 
 > ⚠️ Experimental tool under development  
 > This project is unofficial and not affiliated with or endorsed by Scaleway.  
@@ -174,19 +176,6 @@ impact plan --file examples/tfplan.json --format table
 impact plan --file examples/tfplan.json --tui
 ```
 
-## Troubleshooting
-
-- `could not read plan file: open ... no such file or directory`
-  - generate plan JSON first with `terraform -chdir=<tf-dir> show -json <plan-file> > <output-file>`
-- `could not resolve organization id`
-  - set `SCW_ORGANIZATION_ID` or pass `--org`
-- `could not create footprint client: access key is empty`
-  - set `SCW_ACCESS_KEY`
-- parse errors on plan JSON
-  - `plan` expects real Terraform `show -json` output
-- negative rows or lower totals after deletes/updates
-  - expected behavior for action-aware monthly delta estimation
-
 ## Development
 
 Run tests:
@@ -201,6 +190,22 @@ For local development without installing the binary:
 go run ./cmd/impact --help
 ```
 
+## Automated Badge
+
+You can publish an estimate badge generated from plan output.
+
+- endpoint file: `badges/impact-estimate.json`
+- generator tool: `cmd/impact-badge/main.go`
+- workflow: `.github/workflows/impact-estimate-badge.yml`
+
+Local generation:
+
+```bash
+mkdir -p .tmp
+impact plan --file examples/tfplan.json --format json > .tmp/impact.json
+go run ./cmd/impact-badge --input .tmp/impact.json --output badges/impact-estimate.json
+```
+
 ## Links
 
 | Topic | Link |
@@ -210,8 +215,3 @@ go run ./cmd/impact --help
 | Environmental Footprint User API | https://www.scaleway.com/en/developers/api/environmental-footprint/user-api/ |
 | Product Catalog Public Catalog API | https://www.scaleway.com/en/developers/api/product-catalog/public-catalog-api/ |
 | Scaleway Go SDK | https://github.com/scaleway/scaleway-sdk-go |
-
-## Next
-
-- MCP integration
-- Github Badge
