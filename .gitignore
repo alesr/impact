@@ -1,0 +1,8 @@
+go.work
+go.work.sum
+examples/tfplan
+examples/.terraform
+examples/.terraform.lock.hcl
+examples/tfplan.json
+examples/terraform.tfvars
+tfplan.json
