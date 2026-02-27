@@ -1,10 +1,10 @@
 # IMPACT
 
-IMPACT is *an experimental* CLI for assessing the environmental impact of Scaleway infrastructure from two sources: Terraform plans (forecast) and Scaleway APIs (measured data).
+IMPACT is CLI for assessing the environmental impact of Scaleway infrastructure from two sources: Terraform plans (forecast) and Scaleway APIs (measured data).
 
 It reports monthly impact focused on carbon emissions (`kgCO2e`) and water consumption (`m3`).
 
-> ⚠️ Experimental tool under active development  
+> ⚠️ Experimental tool under development  
 > This project is unofficial and not affiliated with or endorsed by Scaleway.  
 > impact plan relies on Terraform-to-SKU mapping logic and catalog metadata, so results are estimates only.  
 > Do not use this output as a compliance source of truth.  
