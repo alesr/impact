@@ -8,9 +8,9 @@ It reports monthly impact focused on carbon emissions (`kgCO2e`) and water consu
 
 Estimated monthly impact badge (from Terraform plan). Setup and generation details: `docs/badges.md`.
 
-> ⚠️ Experimental tool under development  
+> ⚠️ Proof-of-concept tool under development  
 > This project is unofficial and not affiliated with or endorsed by Scaleway.  
-> impact plan relies on Terraform-to-SKU mapping logic and catalog metadata, so results are estimates only.  
+> impact uses Scaleway Environmental Footprint APIs that are currently in alpha, and plan results rely on Terraform-to-SKU mapping logic and catalog metadata.  
 > Do not use this output as a compliance source of truth.  
 
 ## Commands
