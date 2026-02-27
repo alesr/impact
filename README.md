@@ -210,3 +210,8 @@ go run ./cmd/impact --help
 | Environmental Footprint User API | https://www.scaleway.com/en/developers/api/environmental-footprint/user-api/ |
 | Product Catalog Public Catalog API | https://www.scaleway.com/en/developers/api/product-catalog/public-catalog-api/ |
 | Scaleway Go SDK | https://github.com/scaleway/scaleway-sdk-go |
+
+## Next
+
+- MCP integration
+- Github Badge
