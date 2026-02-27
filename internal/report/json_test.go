@@ -11,8 +11,6 @@ import (
 )
 
 func TestPrintJSON(t *testing.T) {
-	t.Parallel()
-
 	rep := estimate.Report{Rows: []estimate.Row{{Address: "a", KgCO2eMonth: 0.12}}, Totals: estimate.Totals{KgCO2eMonth: 0.12}}
 
 	output := captureStdout(t, func() {

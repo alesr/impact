@@ -9,8 +9,6 @@ import (
 )
 
 func TestPrintTable(t *testing.T) {
-	t.Parallel()
-
 	rep := estimate.Report{
 		Rows: []estimate.Row{{
 			Address:      "scaleway_instance_server.web",
