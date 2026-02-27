@@ -1,0 +1,45 @@
+name: Impact Estimate Badge
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - badges/**
+
+permissions:
+  contents: write
+
+jobs:
+  generate-badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build impact JSON from example plan
+        run: |
+          mkdir -p .tmp
+          go run ./cmd/impact plan --file examples/tfplan.json --format json > .tmp/impact.json
+
+      - name: Generate single estimate badge endpoint JSON
+        run: |
+          go run ./cmd/impact-badge --input .tmp/impact.json --output badges/impact-estimate.json
+
+      - name: Commit badge update
+        run: |
+          if git diff --quiet -- badges/impact-estimate.json; then
+            echo "No badge changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add badges/impact-estimate.json
+          git commit -m "ci: refresh impact estimate badge [skip ci]"
+          git push
