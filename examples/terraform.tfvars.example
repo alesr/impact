@@ -1,0 +1,22 @@
+# optional: leave unset to use Scaleway provider defaults from env/config.
+# project_id      = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+# organization_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+region = "fr-par"
+zone   = "fr-par-1"
+
+# instance + storage
+web_type      = "DEV1-M"
+web_replicas  = 1
+block_size_gb = 500
+
+# load balancer
+load_balancer_type   = "LB-S"
+
+# databases
+rdb_node_type      = "DB-DEV-S"
+redis_node_type    = "RED1-MICRO"
+redis_cluster_size = 3
+
+db_password    = "<set-a-strong-password>"
+redis_password = "<set-a-strong-password>"
