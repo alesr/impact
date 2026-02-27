@@ -25,6 +25,16 @@ impact actual --help
 impact doctor --help
 ```
 
+## Screenshots
+
+### 1) CLI output
+
+![CLI output](https://github.com/user-attachments/assets/d91aa997-0a5f-475c-bd4d-ae76521211b5)
+
+### 2) TUI output
+
+![TUI output](https://github.com/user-attachments/assets/a6660a24-3c87-450a-aa0c-1d53397dc7f6)
+
 ## What It Is For
 
 - review infrastructure changes before `terraform apply`
