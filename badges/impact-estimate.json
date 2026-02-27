@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "label": "impact estimate/month",
-  "message": "~0.701367 kgCO2e | ~6.17628e-05 m3",
+  "message": "~0.701035 kgCO2e | ~6.17292e-05 m3",
   "color": "2e7d32",
   "cacheSeconds": 3600
 }
