@@ -6,6 +6,8 @@ It reports monthly impact focused on carbon emissions (`kgCO2e`) and water consu
 
 ![Impact estimate](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/alesr/impact/main/badges/impact-estimate.json)
 
+Estimated monthly impact badge (from Terraform plan). Setup and generation details: `docs/badges.md`.
+
 > ⚠️ Experimental tool under development  
 > This project is unofficial and not affiliated with or endorsed by Scaleway.  
 > impact plan relies on Terraform-to-SKU mapping logic and catalog metadata, so results are estimates only.  
@@ -188,22 +190,6 @@ For local development without installing the binary:
 
 ```bash
 go run ./cmd/impact --help
-```
-
-## Automated Badge
-
-You can publish an estimate badge generated from plan output.
-
-- endpoint file: `badges/impact-estimate.json`
-- generator tool: `cmd/impact-badge/main.go`
-- workflow: `.github/workflows/impact-estimate-badge.yml`
-
-Local generation:
-
-```bash
-mkdir -p .tmp
-impact plan --file examples/tfplan.json --format json > .tmp/impact.json
-go run ./cmd/impact-badge --input .tmp/impact.json --output badges/impact-estimate.json
 ```
 
 ## Links
