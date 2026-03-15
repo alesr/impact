@@ -45,6 +45,23 @@ func TestResolve(t *testing.T) {
 		assert.Equal(t, "/storage/rdb/instance/db-dev-s/fr-par", res.Product.SKU)
 	})
 
+	t.Run("rdb prefers node sku when available", func(t *testing.T) {
+		t.Parallel()
+
+		kg := 0.5
+		products := []catalog.Product{
+			{SKU: "/storage/rdb/instance/db-dev-s/fr-par", ProductCategory: "database", Locality: catalog.Locality{Region: "fr-par"}, Product: "RDB DB-DEV-S"},
+			{SKU: "/storage/rdb/node/db-dev-s/fr-par1", ProductCategory: "database", Locality: catalog.Locality{Zone: "fr-par-1"}, Product: "RDB DB-DEV-S", EnvironmentalImpactEstimation: &catalog.EnvironmentalEstimation{KgCO2Equivalent: &kg}},
+		}
+
+		change := plan.ResourceChange{Type: "scaleway_rdb_instance", After: map[string]any{"region": "fr-par", "node_type": "DB-DEV-S"}}
+
+		res, err := Resolve(change, products)
+		require.NoError(t, err)
+		require.NotNil(t, res.Product)
+		assert.Equal(t, "/storage/rdb/node/db-dev-s/fr-par1", res.Product.SKU)
+	})
+
 	t.Run("redis strict mapping expands main and additional nodes", func(t *testing.T) {
 		t.Parallel()
 
@@ -128,7 +145,7 @@ func TestResolve(t *testing.T) {
 		assert.Equal(t, "/network/lb/lb-s/fr-par-1", res.Product.SKU)
 	})
 
-	t.Run("returns not implemented for unsupported resource types", func(t *testing.T) {
+	t.Run("returns usage-input-required for usage-driven resources", func(t *testing.T) {
 		t.Parallel()
 
 		change := plan.ResourceChange{Type: "scaleway_object_bucket", After: map[string]any{"name": "logs"}}
@@ -137,7 +154,19 @@ func TestResolve(t *testing.T) {
 
 		var mappingErr *Error
 		require.ErrorAs(t, err, &mappingErr)
-		assert.Equal(t, ErrorCodeNotImplemented, mappingErr.Code)
+		assert.Equal(t, ErrorCodeRequiresUsageInput, mappingErr.Code)
+	})
+
+	t.Run("returns ignored for metadata resources", func(t *testing.T) {
+		t.Parallel()
+
+		change := plan.ResourceChange{Type: "scaleway_container_domain", After: map[string]any{"hostname": "example.com"}}
+		_, err := Resolve(change, nil)
+		require.Error(t, err)
+
+		var mappingErr *Error
+		require.ErrorAs(t, err, &mappingErr)
+		assert.Equal(t, ErrorCodeIgnoredNonImpact, mappingErr.Code)
 	})
 
 	t.Run("returns missing required attribute when required fields are absent", func(t *testing.T) {

@@ -10,9 +10,13 @@ import (
 )
 
 type impactReport struct {
-	Totals struct {
+	Unsupported []struct{} `json:"unsupported"`
+	Totals      struct {
 		KgCO2eMonth  float64 `json:"kgco2e_month"`
+		KgCO2eKnown  bool    `json:"kgco2e_known"`
 		M3WaterMonth float64 `json:"m3_water_month"`
+		M3WaterKnown bool    `json:"m3_water_known"`
+		UnknownRows  int     `json:"unknown_rows"`
 	} `json:"totals"`
 }
 
@@ -74,8 +78,17 @@ func buildBadge(rep *impactReport) badge {
 		return b
 	}
 
-	b.Message = fmt.Sprintf("~%s kgCO2e | ~%s m3", formatValue(rep.Totals.KgCO2eMonth), formatValue(rep.Totals.M3WaterMonth))
-	b.Color = "2e7d32"
+	message := fmt.Sprintf("~%s kgCO2e | ~%s m3", formatValue(rep.Totals.KgCO2eMonth), formatValue(rep.Totals.M3WaterMonth))
+	isComplete := rep.Totals.KgCO2eKnown && rep.Totals.M3WaterKnown && rep.Totals.UnknownRows == 0 && len(rep.Unsupported) == 0
+
+	if isComplete {
+		b.Message = message
+		b.Color = "2e7d32"
+		return b
+	}
+
+	b.Message = message + " (partial)"
+	b.Color = "f9a825"
 	return b
 }
 
