@@ -5,9 +5,11 @@ import "time"
 type ServiceCategory string
 
 const (
-	ServiceCategoryBaremetal ServiceCategory = "baremetal"
-	ServiceCategoryCompute   ServiceCategory = "compute"
-	ServiceCategoryStorage   ServiceCategory = "storage"
+	ServiceCategoryBaremetal  ServiceCategory = "baremetal"
+	ServiceCategoryCompute    ServiceCategory = "compute"
+	ServiceCategoryStorage    ServiceCategory = "storage"
+	ServiceCategoryNetwork    ServiceCategory = "network"
+	ServiceCategoryContainers ServiceCategory = "containers"
 )
 
 type ProductCategory string
@@ -19,6 +21,8 @@ const (
 	ProductCategoryElasticMetal  ProductCategory = "elastic_metal"
 	ProductCategoryInstances     ProductCategory = "instances"
 	ProductCategoryObjectStorage ProductCategory = "object_storage"
+	ProductCategoryLoadBalancer  ProductCategory = "load_balancer"
+	ProductCategoryKubernetes    ProductCategory = "kubernetes"
 )
 
 type QueryImpactDataRequest struct {

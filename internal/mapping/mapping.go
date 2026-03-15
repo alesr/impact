@@ -25,6 +25,8 @@ const (
 	ErrorCodeNotImplemented           ErrorCode = "not_implemented"
 	ErrorCodeMissingRequiredAttribute ErrorCode = "missing_required_attribute"
 	ErrorCodeNoCatalogMatch           ErrorCode = "no_catalog_match"
+	ErrorCodeIgnoredNonImpact         ErrorCode = "ignored_non_impact"
+	ErrorCodeRequiresUsageInput       ErrorCode = "requires_usage_input"
 )
 
 type Error struct {
@@ -64,6 +66,12 @@ func Resolve(change plan.ResourceChange, products []catalog.Product) (Result, er
 	nodeTypeToken := normalizeToken(rawNodeType)
 
 	switch change.Type {
+	case "random_password":
+		return Result{}, &Error{Code: ErrorCodeIgnoredNonImpact, Reason: "helper resource has no direct infrastructure impact"}
+	case "scaleway_container_domain", "scaleway_container_namespace":
+		return Result{}, &Error{Code: ErrorCodeIgnoredNonImpact, Reason: "metadata resource has no direct infrastructure impact"}
+	case "scaleway_container", "scaleway_object_bucket", "scaleway_registry_namespace":
+		return Result{}, &Error{Code: ErrorCodeRequiresUsageInput, Reason: "usage-based resource requires runtime usage inputs"}
 	case "scaleway_instance_server":
 		if resourceTypeToken == "" {
 			return Result{}, &Error{Code: ErrorCodeMissingRequiredAttribute, Reason: "missing required attribute: type"}
@@ -119,7 +127,7 @@ func Resolve(change plan.ResourceChange, products []catalog.Product) (Result, er
 			return Result{}, &Error{Code: ErrorCodeMissingRequiredAttribute, Reason: "missing required attribute: node_type"}
 		}
 
-		product := findBestProduct(products, isRDBProduct, zone, region, nodeTypeToken, nodeTypeToken != "")
+		product := findBestRDBProduct(products, zone, region, nodeTypeToken)
 		if product != nil {
 			return Result{Product: product, Qty: 1}, nil
 		}
@@ -201,6 +209,7 @@ func noCatalogMatchError(zone, region, typeKey, typeValue string) error {
 func findBestProduct(products []catalog.Product, matchResource func(catalog.Product) bool, zone, region, typeToken string, requireType bool) *catalog.Product {
 	bestIndex := -1
 	bestScore := -1
+	bestHasEnvData := false
 
 	for i := range products {
 		product := products[i]
@@ -224,9 +233,11 @@ func findBestProduct(products []catalog.Product, matchResource func(catalog.Prod
 			}
 		}
 
-		if bestIndex < 0 || score > bestScore || (score == bestScore && strings.Compare(product.SKU, products[bestIndex].SKU) < 0) {
+		hasEnvData := hasEnvironmentalData(product)
+		if bestIndex < 0 || score > bestScore || (score == bestScore && hasEnvData && !bestHasEnvData) || (score == bestScore && hasEnvData == bestHasEnvData && strings.Compare(product.SKU, products[bestIndex].SKU) < 0) {
 			bestIndex = i
 			bestScore = score
+			bestHasEnvData = hasEnvData
 		}
 	}
 
@@ -288,7 +299,7 @@ func isBaremetalProduct(product catalog.Product) bool {
 func isLoadBalancerProduct(product catalog.Product) bool {
 	category := normalizeToken(product.ProductCategory)
 	sku := strings.ToLower(product.SKU)
-	return category == "loadbalancer" || strings.Contains(sku, "/network/lb/") || strings.Contains(sku, "/loadbalancer/")
+	return category == "loadbalancer" || strings.Contains(sku, "/network/lb/") || strings.Contains(sku, "/network/loadbalancer/") || strings.Contains(sku, "/loadbalancer/")
 }
 
 func isBlockStorageProduct(product catalog.Product) bool {
@@ -300,6 +311,33 @@ func isBlockStorageProduct(product catalog.Product) bool {
 func isRDBProduct(product catalog.Product) bool {
 	sku := strings.ToLower(product.SKU)
 	return strings.Contains(sku, "/storage/rdb/")
+}
+
+func findBestRDBProduct(products []catalog.Product, zone, region, nodeTypeToken string) *catalog.Product {
+	nodeProducts := make([]catalog.Product, 0, len(products))
+	for _, product := range products {
+		sku := strings.ToLower(product.SKU)
+		if strings.Contains(sku, "/storage/rdb/node/") {
+			nodeProducts = append(nodeProducts, product)
+		}
+	}
+
+	if len(nodeProducts) > 0 {
+		if product := findBestProduct(nodeProducts, isRDBProduct, zone, region, nodeTypeToken, true); product != nil {
+			return product
+		}
+	}
+
+	return findBestProduct(products, isRDBProduct, zone, region, nodeTypeToken, true)
+}
+
+func hasEnvironmentalData(product catalog.Product) bool {
+	env := product.EnvironmentalImpactEstimation
+	if env == nil {
+		return false
+	}
+
+	return env.KgCO2Equivalent != nil || env.M3WaterUsage != nil
 }
 
 func isRedisProduct(product catalog.Product) bool {

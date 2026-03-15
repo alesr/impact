@@ -120,8 +120,8 @@ Optional filters:
 
 Accepted values:
 
-- service categories: `baremetal`, `compute`, `storage`
-- product categories: `applesilicon`, `blockstorage`, `dedibox`, `elasticmetal`, `instances`, `objectstorage`
+- service categories: `baremetal`, `compute`, `storage`, `network`, `containers`
+- product categories: `applesilicon`, `blockstorage`, `dedibox`, `elasticmetal`, `instances`, `objectstorage`, `loadbalancer`, `kubernetes`
 
 Filter value normalization is supported, so separators like `-`, `_`, and spaces are accepted (for example `apple-silicon`, `apple_silicon`, `apple silicon`).
 

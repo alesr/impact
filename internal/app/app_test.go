@@ -134,9 +134,8 @@ func TestParseServiceCategories(t *testing.T) {
 	}{
 		{name: "valid", input: "compute,storage", wantLen: 2},
 		{name: "valid aliases", input: "bare-metal, compute", wantLen: 2},
+		{name: "valid network", input: "network,containers", wantLen: 2},
 		{name: "empty", input: "", wantLen: 0},
-		{name: "unsupported network", input: "network", wantErr: true},
-		{name: "unsupported containers", input: "containers", wantErr: true},
 		{name: "invalid", input: "wrong", wantErr: true},
 	}
 
@@ -167,9 +166,8 @@ func TestParseProductCategories(t *testing.T) {
 	}{
 		{name: "valid", input: "instances,objectstorage", wantLen: 2},
 		{name: "valid aliases", input: "apple-silicon, block_storage", wantLen: 2},
+		{name: "valid new categories", input: "load-balancer,kubernetes", wantLen: 2},
 		{name: "empty", input: "", wantLen: 0},
-		{name: "unsupported load balancer", input: "load-balancer", wantErr: true},
-		{name: "unsupported kubernetes", input: "kubernetes", wantErr: true},
 		{name: "invalid", input: "wrong", wantErr: true},
 	}
 

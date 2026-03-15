@@ -453,8 +453,12 @@ func parseServiceCategories(raw string) ([]footprint.ServiceCategory, error) {
 			out = append(out, footprint.ServiceCategoryCompute)
 		case "storage":
 			out = append(out, footprint.ServiceCategoryStorage)
+		case "network":
+			out = append(out, footprint.ServiceCategoryNetwork)
+		case "containers":
+			out = append(out, footprint.ServiceCategoryContainers)
 		default:
-			return nil, fmt.Errorf("could not validate --service-category value %q (allowed: baremetal, compute, storage)", value)
+			return nil, fmt.Errorf("could not validate --service-category value %q (allowed: baremetal, compute, storage, network, containers)", value)
 		}
 	}
 
@@ -482,8 +486,12 @@ func parseProductCategories(raw string) ([]footprint.ProductCategory, error) {
 			out = append(out, footprint.ProductCategoryInstances)
 		case "objectstorage":
 			out = append(out, footprint.ProductCategoryObjectStorage)
+		case "loadbalancer":
+			out = append(out, footprint.ProductCategoryLoadBalancer)
+		case "kubernetes":
+			out = append(out, footprint.ProductCategoryKubernetes)
 		default:
-			return nil, fmt.Errorf("could not validate --product-category value %q (allowed: applesilicon, blockstorage, dedibox, elasticmetal, instances, objectstorage)", value)
+			return nil, fmt.Errorf("could not validate --product-category value %q (allowed: applesilicon, blockstorage, dedibox, elasticmetal, instances, objectstorage, loadbalancer, kubernetes)", value)
 		}
 	}
 
